@@ -35,6 +35,7 @@ def home():
 				<li>127.0.0.1:5000/<b>chain</b> - This lists the entire Blockchain</li> \
                 <li>127.0.0.1:5000/<b>add_entry</b> - This creates a new URL and IP address request to add to the Blockchain</li> \
                 <li>127.0.0.1:5000/<b>add_dns_entry</b> - This creates a new URL and IP address request to add only to the DNS</li> \
+                <li>127.0.0.1:5000/<b>add_corrupted_entry</b> - This creates a new URL, but IP addresses for the DNS and Blockchain</li> \
                 <li>127.0.0.1:5000/<b>query/url</b> - This performs a check on the Blockchain and local DNS to see whether \
                     the URL given exists</li> \
                 <li>127.0.0.1: 5000/<b>dns_data</b> - This returns the data currently stored in the list on the DNS 'server'</li> \
@@ -88,6 +89,37 @@ def add_dns_entry():
     print('---------------------------------------------------')
 
     return "Data generated, click <a href=\"/dns_data\">here</a> to see the DNS storage."
+
+@app.route('/add_corrupted_entry')
+def add_corrupted_entry():
+    data1 = dns.generate_data()
+    data2 = dns.generate_data()
+
+    url = data1[0]
+
+    dns_ip = data1[1]
+    blockchain_ip = data2[1]
+
+    previous_block = blockchain.previous_block
+    previous_hash = blockchain.hash_block(previous_block)
+    blockchain.new_transaction(url, blockchain_ip)
+
+    blockchain.new_block(previous_hash)
+
+    print('---------------------------------------------------')
+    print('New block generated with the following data: ')
+    print('URL: ' + url)
+    print('IP: ' + blockchain_ip)
+    print('---------------------------------------------------')
+    print('Data stored locally (DNS) is as follows: ')
+    print('URL: ' + url)
+    print('IP: ' + dns_ip)
+    dns.store(url, dns_ip)
+    print('---------------------------------------------------')
+
+    return "Block has been generated, click <a href=\"/chain\">here</a> to see the full chain. \
+    <br> \
+    Or click <a href=\"/dns_data\">here</a> to see the DNS data"
 
 @app.route('/dns_data')
 def dns_data():
