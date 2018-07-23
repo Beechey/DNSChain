@@ -1,0 +1,6 @@
+# Compiled files, txt and docx
+*.docx
+*.txt
+
+# Server folder and files
+*.pyc
