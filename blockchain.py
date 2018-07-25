@@ -19,6 +19,8 @@ class Blockchain(object):
 		# Create the genesis block (the initial block of the chain)
 		self.new_block(previous_hash = 1)
 
+		# Create history by hashing entire Blockchain as a new Block after every new Block
+
 	def new_transaction(self, url, ip):
 		"""
 		This creates a new transaction that will go into the next block to be hashed and added to the chain
@@ -67,7 +69,7 @@ class Blockchain(object):
 	@staticmethod
 	def hash_block(block):
 		"""
-        Creates a SHA-256 hash of a block
+        Creates a SHA-256 hash of a Block
         :param block: <dict> Block to be hashed
 		:return: <string> A hexdigest of the block
         """
@@ -86,3 +88,29 @@ class Blockchain(object):
 				return block['transactions'].get('ip')
 		
 		return "False"
+
+	def history_block(self, chain_hash):
+		"""
+		This creates a new history Block in the Blockchain
+        :param chain_hash: <string> A hash of the entire chain
+        :return: <dict> A new history Block
+		"""
+
+		history = {
+			'history': chain_hash
+		}
+
+		self.chain.append(history)
+
+		return history
+
+	# def get_chain(self):
+	# 	return self.chain
+
+	def hash_chain(self):
+		"""
+        Creates a SHA-256 hash of the entire Blockchain
+		:return: <string> A hexdigest of the the entire Blockchain
+        """
+		chain_string = json.dumps(self.chain, sort_keys=True).encode()
+		return hashlib.sha256(chain_string).hexdigest()
